@@ -10,6 +10,7 @@ class User (UserMixin):
         self.email = email
         self.password = password
     
+
     def check_email_exists(email) -> bool:
         """
             Verifica si la cuenta de correo electrónico ya se encuentra registrada.
@@ -60,6 +61,7 @@ class User (UserMixin):
             print(f"Error saving user:{ex}")
             return False
         
+
     def check_login(email, password):
         try:
             connection = get_connection()
@@ -87,6 +89,7 @@ class User (UserMixin):
             print(f"Error login user:{ex}")
             return False
         
+
     def get_by_id(id):
             try:
                 connection = get_connection()
