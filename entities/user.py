@@ -11,6 +11,7 @@ class User (UserMixin):
         self.password = password
     
 
+    # Metodo para verificar si el correo ya se encuentra registrado en la base de datos
     def check_email_exists(email) -> bool:
         """
             Verifica si la cuenta de correo electrónico ya se encuentra registrada.
@@ -33,6 +34,7 @@ class User (UserMixin):
         return row is not None
     
         
+    # Metodo para guardar un nuevo usuario en la base de datos
     def save(name: str, email:str, password:str) -> bool:
         """
             Guarda un registro de usuario en la base de datos
@@ -62,6 +64,7 @@ class User (UserMixin):
             return False
         
 
+    # Metodo para verificar las credenciales de inicio de sesión
     def check_login(email, password):
         try:
             connection = get_connection()
@@ -90,6 +93,7 @@ class User (UserMixin):
             return False
         
 
+    # Metodo para obtener un usuario por su ID
     def get_by_id(id):
             try:
                 connection = get_connection()

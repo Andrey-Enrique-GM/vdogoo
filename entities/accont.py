@@ -1,35 +1,52 @@
 from persistence.db import get_connection
+from datetime import datetime
+from entities.user import User
+from entities.transaction import Transaction
 import pymysql
 
-class Account:
-    def __init__(self, id, number, creation_date, id_user):
+class Account():
+    #def __init__(self, id: int, number: str, creation_date: datetime, user: User, transactions: list, id_user: int):
+    def __init__(self, id: int, number: str, creation_date: datetime, user: User, transactions: list):
         self.id = id
         self.number = number
         self.creation_date = creation_date
-        self.id_user = id_user
+        self.user = user
+        self.transactions = transactions
 
-    @staticmethod
-    def check_account(id_user):
-        connection = get_connection()
-        cursor = connection.cursor(pymysql.cursors.DictCursor)
-        sql = "SELECT number from account WHERE id_user = %s"
-        cursor.execute(sql, (id_user,))
 
-        row = cursor.fetchone()
+    # Metodo para obtener la cuenta de un usuario por su id_user
+    def get_account_by_user(id_user: int):
+        try:
+            connection = get_connection()
+            cursor = connection.cursor(pymysql.cursors.DictCursor)
 
-        cursor.close()
-        connection.close()
-        return row is not None
+            sql = "SELECT id, number, creation_date, id_user FROM account WHERE id_user = %s"
+            cursor.execute(sql, (id_user,))
 
-    @staticmethod
-    def get_by_user_id(id_user):
-        connection = get_connection()
-        cursor = connection.cursor(pymysql.cursors.DictCursor)
-        sql = "SELECT id, number, creation_date, id_user FROM account WHERE id_user = %s"
-        cursor.execute(sql, (id_user,))
-        row = cursor.fetchone()
-        cursor.close()
-        connection.close()
-        if row:
-            return Account(row["id"], row["number"], row["creation_date"], row["id_user"])
-        return None
+            rs = cursor.fetchone()
+
+            user = User.get_by_id(rs["id_user"])
+            transactions = Transaction.get_transactions_by_account(rs["id"])
+
+            account = Account(
+                rs["id"],
+                rs["number"],
+                rs["creation_date"],
+                user,
+                transactions
+            )
+            return account
+        except Exception as ex:
+            print(f"Error retrieving account: {ex}")
+            return None
+        
+
+
+    def calculate_balance(account):
+        balance = 0.0
+        for transaction in account.transactions:
+            if transaction.type == 1:  # Ingreso
+                balance += float(transaction.amount)
+            elif transaction.type == 2:  # Egreso
+                balance -= float(transaction.amount)
+        return balance

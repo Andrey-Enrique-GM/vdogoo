@@ -31,24 +31,9 @@ def signup():
 @app.route('/welcome', methods=["GET"])
 @login_required
 def welcome():
-    # Obtener la cuenta del usuario actual en base a su ID
-    account = Account.get_by_user_id(current_user.id)
-    # Obtener las transacciones de la cuenta en un array
-    transacciones = []
-    saldo = None    # por si no tiene cuenta
-    if account:
-        # Obtener las transacciones de la cuenta en un array
-        transacciones = Transaction.get_by_account(account.id)
-        saldo = Decimal('0.0')
-        for t in transacciones:
-            # Si el tipo de transacción es 1, se suma el monto al saldo
-            if t.type == 1:
-                saldo += Decimal(t.amount)
-            # Si el tipo de transacción es 2, se resta el monto al saldo
-            elif t.type == 2:
-                saldo -= Decimal(t.amount)
-    # Renderizar la plantilla de bienvenida con la cuenta, el saldo y las transacciones
-    return render_template('welcome.html', account=account, saldo=float(saldo) if saldo is not None else None, transacciones=transacciones)
+    account = Account.get_account_by_user(current_user.id)
+    balance = Account.calculate_balance(account)
+    return render_template("welcome.html", account = account, balance = balance)
 
 @app.route('/api/users', methods=["POST"])
 def create_user():

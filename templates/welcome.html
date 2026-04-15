@@ -131,46 +131,40 @@
                         <div class="col-md-6">
                             <h5 class="mb-sm-0 font-size-18">Cuenta: {{account.number}}</h5>
                         </div>
-                        <div class="col-md-6 text-end">
+                        <div class="col-md-6 text-end padding-right-5">
                             <h5 class="mb-sm-0 font-size-18">Saldo actual</h5>
-                            <div class="font-size-24 text-success">{{ saldo is not none and ("$%.2f" % saldo) or "$0.00" }}</div>
+                        <h3 > {{balance }}
+                            
+
                         </div>
                     </div>
 
 
                     <!-- Mostrar el historial de movimientos en una tabla debajo del numero de cuenta y el saldo -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <h5 class="mb-3">Historial de movimientos</h5>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Fecha</th>
-                                            <th>Descripción</th>
-                                            <th>Monto</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for t in transacciones %}
-                                        <tr>
-                                            <td>{{ t.date.strftime('%Y-%m-%d %H:%M') if t.date else '' }}</td>
-                                            <td>{{ t.description }}</td>
-                                            <td>
-                                                <span class="fw-bold {% if t.type == 1 %}text-success{% elif t.type == 2 %}text-danger{% endif %}">
-                                                    {{ (t.type == 2 and '-') or '' }}${{ '%.2f'|format(t.amount) }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        {% else %}
-                                        <tr>
-                                            <td colspan="3" class="text-center">Sin movimientos</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div>
+                        <h5 class="mb-sm-0 font-size-18">Historial de movimientos</h5>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Descripción</th>
+                                    <th>Tipo</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in account.transactions %}
+                                <tr>
+                                    <td>{{ transaction.date }}</td>
+                                    <td>{{ transaction.description }}</td>
+                                    <td>{{ transaction.type == 1 and "Ingreso" or "Egreso" }}</td>
+                                    <td class="{{ transaction.type == 1 and 'text-success' or 'text-danger' }}">
+                                        {{ "$%.2f" % transaction.amount }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                     
 
@@ -200,7 +194,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="text-sm-end d-none d-sm-block">
-                                        Desarrollado por [tu nombre]
+                                        Desarrollado por Andrey
                                     </div>
                                 </div>
                             </div>
