@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from entities.accont import Account
+from entities.log import Log
 from entities.user import User
 from entities.transaction import Transaction
 from flask_login import LoginManager, current_user, login_user, login_required, logout_user
 from dotenv import load_dotenv
 import os
 from decimal import Decimal
+
+from enums.log_type import LogType
 
 load_dotenv()
 
@@ -62,6 +65,10 @@ def login():
     if user:
 
         login_user(user)
+
+        # Guardar el log de inicio de sesion
+        Log.save_log(user, "Inicio de sesion", LogType.LOGIN)
+        
         return jsonify({
             "success": True,
             "message": "Sesión iniciada correctamente"
