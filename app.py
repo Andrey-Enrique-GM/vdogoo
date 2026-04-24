@@ -62,6 +62,8 @@ def login():
     password = data.get("password")
 
     user = User.check_login(email, password)
+
+    # TO DO:    Si usuario is_active=0, esta inactiva, si is_active=1, esta activa y puede iniciar sesion
     if user:
 
         login_user(user)

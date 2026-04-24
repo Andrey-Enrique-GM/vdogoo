@@ -1,3 +1,4 @@
+from entities.permission import Permission
 from persistence.db import get_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from enums.profile import Profile
@@ -76,7 +77,7 @@ class User (UserMixin):
             cursor = connection.cursor(pymysql.cursors.DictCursor)
             
 
-            sql = "SELECT id, name, email, password FROM user WHERE email = %s"
+            sql = "SELECT id, name, email, password, profile, is_active FROM user WHERE email = %s"
             cursor.execute(sql, (email,))
 
             user = cursor.fetchone()
@@ -85,11 +86,15 @@ class User (UserMixin):
             connection.close()
 
             if user and check_password_hash(user["password"], password):
+                permissions = Permission.get_permissions_by_user(user["id"])
                 return User(
                     user["id"],
                     user["name"],
                     user["email"],
-                    ""
+                    "",
+                    user["profile"],
+                    permissions,
+                    user["is_active"]
                 )
 
             return None
@@ -104,7 +109,7 @@ class User (UserMixin):
                 connection = get_connection()
                 cursor = connection.cursor(pymysql.cursors.DictCursor)
                 
-                sql = "SELECT id, name, email, password FROM user WHERE id = %s"
+                sql = "SELECT id, name, email, password, profile, is_active FROM user WHERE id = %s"
                 cursor.execute(sql, (id,))
 
                 user = cursor.fetchone()
@@ -113,11 +118,15 @@ class User (UserMixin):
                 connection.close()
 
                 if user:
+                    permissions = Permission.get_permissions_by_user(user["id"])
                     return User(
                         user["id"],
                         user["name"],
                         user["email"],
-                        user["password"]
+                        user["password"],
+                        user["profile"],
+                        permissions,
+                        user["is_active"]
                     )
 
                 return None
