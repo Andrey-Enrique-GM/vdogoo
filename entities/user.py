@@ -1,14 +1,19 @@
 from persistence.db import get_connection
 from werkzeug.security import generate_password_hash, check_password_hash
+from enums.profile import Profile
 import pymysql
 from flask_login import UserMixin
 
 class User (UserMixin):
-    def __init__(self, id: int, name:str, email:str, password:str):
+    def __init__(self, id: int, name: str, email: str, password: str, profile: Profile,
+                permissions: list, is_active: bool):
         self.id= id
         self.name = name
         self.email = email
         self.password = password
+        self.profile = profile
+        self.permissions = permissions
+        self.is_active = is_active
     
 
     # Metodo para verificar si el correo ya se encuentra registrado en la base de datos

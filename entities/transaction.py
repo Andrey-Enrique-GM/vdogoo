@@ -3,7 +3,7 @@ from datetime import datetime
 from enums.transaction_type import TransactionType
 import pymysql
 
-class Transaction():
+class Transaction ():
     #def __init__(self, id: int, description: str, date, amount: float, type: int, id_account: int):
     def __init__(self, id: int, description: str, date: datetime, amount: float, type: TransactionType):
         self.id = id

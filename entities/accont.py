@@ -4,8 +4,7 @@ from entities.user import User
 from entities.transaction import Transaction
 import pymysql
 
-class Account():
-    #def __init__(self, id: int, number: str, creation_date: datetime, user: User, transactions: list, id_user: int):
+class Account ():
     def __init__(self, id: int, number: str, creation_date: datetime, user: User, transactions: list):
         self.id = id
         self.number = number
