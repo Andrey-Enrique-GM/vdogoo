@@ -2,11 +2,9 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 from entities.accont import Account
 from entities.log import Log
 from entities.user import User
-from entities.transaction import Transaction
 from flask_login import LoginManager, current_user, login_user, login_required, logout_user
 from dotenv import load_dotenv
 import os
-from decimal import Decimal
 
 from enums.log_type import LogType
 
@@ -35,8 +33,20 @@ def signup():
 @login_required
 def welcome():
     account = Account.get_account_by_user(current_user.id)
-    balance = Account.calculate_balance(account)
-    return render_template("welcome.html", account = account, balance = balance)
+    if account is None:
+        # Crear cuenta de "invitado" para usuarios sin cuenta
+        class GuestAccount:
+            def __init__(self):
+                self.id = None
+                self.number = "**********"
+                self.creation_date = None
+                self.user = current_user
+                self.transactions = []
+        account = GuestAccount()
+        balance = "**********"
+    else:
+        balance = Account.calculate_balance(account)
+    return render_template("welcome.html", account=account, balance=balance)
 
 @app.route('/api/users', methods=["POST"])
 def create_user():
@@ -63,18 +73,25 @@ def login():
 
     user = User.check_login(email, password)
 
-    # TO DO:    Si usuario is_active=0, esta inactiva, si is_active=1, esta activa y puede iniciar sesion
+    # Validar si la cuenta del usuario esta activa
     if user:
 
-        login_user(user)
+        if user.is_active:
 
-        # Guardar el log de inicio de sesion
-        Log.save_log(user, "Inicio de sesion", LogType.LOGIN)
-        
-        return jsonify({
-            "success": True,
-            "message": "Sesión iniciada correctamente"
-        }), 200
+            login_user(user)
+            
+            # Guardar el log de inicio de sesion
+            Log.save_log(user, "Inicio de sesion", LogType.LOGIN)
+            return jsonify({
+                "success": True,
+                "message": "Sesión iniciada correctamente"
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "deactivated": True,
+                "message": "Su cuenta ha sido desactivada. Comuniquese con el administrador del sistema."
+            }), 401
     else:
         return jsonify({
             "success": False,

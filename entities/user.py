@@ -6,15 +6,23 @@ import pymysql
 from flask_login import UserMixin
 
 class User (UserMixin):
-    def __init__(self, id: int, name: str, email: str, password: str, profile: Profile,
-                permissions: list, is_active: bool):
-        self.id= id
+    def __init__(self, id: int, name: str, email: str, password: str,
+                 profile, permissions: list, is_active: bool):
+        self.id = id
         self.name = name
         self.email = email
         self.password = password
-        self.profile = profile
+        # Si profile es int, convertir a Enum
+        if isinstance(profile, Profile):
+            self.profile = profile
+        else:
+            self.profile = Profile(profile)
         self.permissions = permissions
-        self.is_active = is_active
+        self._is_active = is_active
+
+    @property
+    def is_active(self):
+        return self._is_active
     
 
     # Metodo para verificar si el correo ya se encuentra registrado en la base de datos
@@ -86,7 +94,7 @@ class User (UserMixin):
             connection.close()
 
             if user and check_password_hash(user["password"], password):
-                permissions = Permission.get_permissions_by_user(user["id"])
+                permissions = Permission.get_by_user(user["id"])
                 return User(
                     user["id"],
                     user["name"],
@@ -118,7 +126,7 @@ class User (UserMixin):
                 connection.close()
 
                 if user:
-                    permissions = Permission.get_permissions_by_user(user["id"])
+                    permissions = Permission.get_by_user(user["id"])
                     return User(
                         user["id"],
                         user["name"],

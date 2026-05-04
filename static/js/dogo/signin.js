@@ -36,13 +36,20 @@ function login(){
     }). then(response => response.json())
     .then(result =>  {
         if(result.success){
-                window.location.href = "/welcome";
+            window.location.href = "/welcome";
+        } else if(result.deactivated) {
+            Swal.fire({
+                title: 'Cuenta desactivada',
+                text: result.message || 'Su cuenta ha sido desactivada. Comuniquese con el administrador del sistema.',
+                icon:  'error',
+                confirmButtonText: 'Aceptar'
+            });
         } else {
             Swal.fire({
-            title: 'Datos incorrectos',
-            text: 'Sus datos de acceso no son correctos',
-            icon:  'error',
-            confirmButtonText: 'Aceptar'
+                title: 'Datos incorrectos',
+                text: 'Sus datos de acceso no son correctos',
+                icon:  'error',
+                confirmButtonText: 'Aceptar'
             });
         }
     })

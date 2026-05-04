@@ -109,6 +109,15 @@
                                 <div class="col-12">
                                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                                         <h5 class="mb-sm-0 font-size-24">{{ "Bienvenido, " + current_user.name }}</h5>
+                                        <span class="badge bg-primary" style="font-size: 1rem;">
+                                            {% if current_user.profile.value == 1 %}
+                                                Admin
+                                            {% elif current_user.profile.value == 2 %}
+                                                Custom
+                                            {% else %}
+                                                Perfil desconocido
+                                            {% endif %}
+                                        </span>
                                         <h5 class="mb-sm-0 font-size-18">CheemsBank - Servicios Financieros Globales</h5>
 
                                         <div class="page-title-right">

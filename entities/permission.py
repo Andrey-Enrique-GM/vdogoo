@@ -8,8 +8,8 @@ class Permission ():
         self.value = value
 
 
-    # Obtiene los permisos de un usuario especificado por su id
-    def get_permissions_by_user(id_user):
+    # Metodo para obtener los permisos de un usuario por su id_user
+    def get_by_user(id_user: int):
         try:
             connection = get_connection()
             cursor = connection.cursor(pymysql.cursors.DictCursor)
@@ -17,18 +17,20 @@ class Permission ():
             sql = "SELECT id, value FROM permission WHERE id_user = %s"
             cursor.execute(sql, (id_user,))
             
-            rows = cursor.fetchall()
-            
-            permissions = []
-            for row in rows:
-                permissions.append(Permission(
-                    row["id"], 
-                    row["value"]
-                ))
-            
+            rs = cursor.fetchall()
+
             cursor.close()
             connection.close()
+
+            permissions = []
+            
+            for r in rs:
+                permissions.append(Permission(
+                    r["id"], 
+                    ValuePermission(r["value"])
+                ))
+                
             return permissions
         except Exception as ex:
-            print(f"Error consultan permisos: {ex}")
+            print(f"Error retornando permisos: {ex}")
             return []
